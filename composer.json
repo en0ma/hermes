@@ -1,0 +1,23 @@
+{
+    "name": "lawstands/hermes",
+    "description": "A tool to send events and messages asynchronously",
+    "type": "library",
+    "license": "MIT",
+    "require": {},
+    "authors": [
+        {
+            "name": "Enehizena Lawrence",
+            "email": "lawstands@gmail.com"
+        },
+        {
+            "name": "Ezinwa Okpoechi",
+            "email": "brainmaestro@outlook.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Lawstands\\Hermes\\": "src/",
+            "Lawstands\\Hermes\\Tests\\": "Tests/"
+        }
+    }
+}
