@@ -19,12 +19,12 @@ class Channel
         ];
 
     /**
-     * Validate channels.
+     * Get valid channels.
      *
      * @param array $channels
      * @return array
      */
-    public static function validate(array $channels)
+    public static function get(array $channels)
     {
         // create an array of valid channels.
         // the array filter removes the null elements which are

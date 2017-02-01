@@ -24,7 +24,7 @@ class ChannelTest extends PHPUnit_Framework_TestCase
      */
     public function it_returns_all_valid_channels()
     {
-        $validChannels = Channel::validate(array_merge($this->channels, [['path' => 'file_that_does_not_exist']]));
+        $validChannels = Channel::get(array_merge($this->channels, [['path' => 'file_that_does_not_exist']]));
         // no file was created for 'file_that_does_not_exist', so it should
         // fail the validation check and not be included in the channels array.
         $this->assertEquals($this->channels, $validChannels);
@@ -37,7 +37,7 @@ class ChannelTest extends PHPUnit_Framework_TestCase
     {
         $type = $this->channels[0]['type'];
         unset($this->channels[0]['type']);
-        $channels = Channel::validate([$this->channels[0]]);
+        $channels = Channel::get([$this->channels[0]]);
 
         $this->assertEquals($type, $channels[0]['type']);
     }
