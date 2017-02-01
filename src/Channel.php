@@ -1,6 +1,6 @@
 <?php
 
-namespace Lawstands\Hermes;
+namespace Hermes\Hermes;
 
 /**
  * Created by BrainMaestro

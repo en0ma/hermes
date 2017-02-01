@@ -1,4 +1,6 @@
-<?php namespace Lawstands\Hermes;
+<?php 
+
+namespace Hermes\Hermes;
 
 class Command
 {

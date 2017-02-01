@@ -1,5 +1,6 @@
 <?php
-use Lawstands\Hermes\Channel;
+
+use Hermes\Hermes\Channel;
 
 /**
  * Created by BrainMaestro.
