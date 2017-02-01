@@ -10,42 +10,58 @@ namespace Lawstands\Hermes;
 class Channel
 {
     /**
+     * format: extension => program
      * @var array
      */
-    private $receivers = [];
+    private static $types = [
+            'rb' => 'ruby',
+            'py' => 'python',
+        ];
 
     /**
-     * Channel constructor.
-     * 
-     * @param array $receivers
-     */
-    public function __construct(array $receivers)
-    {
-        foreach ($receivers as $receiver) {
-            if ($this->isValid($receiver)) {
-                $this->receivers[] = $receiver;
-            }
-        }
-    }
-
-    /**
-     * Get all receivers.
+     * Validate channels.
      *
+     * @param array $channels
      * @return array
      */
-    public function getReceivers()
+    public static function validate(array $channels)
     {
-        return $this->receivers;
+        // create an array of valid channels.
+        // the array filter removes the null elements which are
+        // the invalid channels.
+        return array_filter(array_map(function ($channel) {
+            $channel['type'] = self::getType($channel);
+
+            return self::isValid($channel) ? $channel : null;
+        }, $channels));
     }
 
     /**
-     * Validate receivers.
+     * Validate channels.
      *
-     * @param $receiver
+     * @param $channel
      * @return bool
      */
-    private function isValid($receiver)
+    private static function isValid($channel)
     {
-        return file_exists($receiver);
+        return file_exists($channel['path']);
+    }
+
+    /**
+     * Get a channel's type.
+     *
+     * @param $channel
+     * @return void
+     */
+    private static function getType($channel)
+    {
+        if ($channel['type']) {
+            return $channel['type'];
+        }
+
+        $extension = pathinfo($channel, PATHINFO_EXTENSION);
+        // choose type if it was found in the types map
+        // or use extension as the type.
+        return array_key_exists($extension, self::$types) ? self::$types[$extension] : $extension;
     }
 }
