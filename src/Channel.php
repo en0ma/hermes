@@ -51,15 +51,15 @@ class Channel
      * Get a channel's type.
      *
      * @param $channel
-     * @return void
+     * @return string
      */
     private static function getType($channel)
     {
-        if ($channel['type']) {
+        if (isset($channel['type']) && $channel['type']) {
             return $channel['type'];
         }
 
-        $extension = pathinfo($channel, PATHINFO_EXTENSION);
+        $extension = pathinfo($channel['path'], PATHINFO_EXTENSION);
         // choose type if it was found in the types map
         // or use extension as the type.
         return array_key_exists($extension, self::$types) ? self::$types[$extension] : $extension;
