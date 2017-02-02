@@ -8,6 +8,7 @@
 namespace Lawstands\Hermes;
 
 use Lawstands\Hermes\Exception\HermesException;
+use Lawstands\Hermes\Formatter\JsonFormatter;
 
 class Config
 {
@@ -31,7 +32,7 @@ class Config
      */
     public function __construct(array $config)
     {
-        if (! self::isValid($config)) {
+        if (! self::hasRequiredKeys($config)) {
             throw new HermesException('Hermes config is missing one of the required config keys');
         }
 
@@ -39,36 +40,64 @@ class Config
     }
 
     /**
-     * Get channel by their aliases
-     * 
+     * Get channels by their aliases.
+     *
      * @param string|array|null $aliases
+     * @param $data
+     * @param bool $async
      * @return array
      */
-    public function getChannels($aliases)
+    public function getChannels($aliases = null, $data, $async = true)
     {
-        // get all aliases
         if (is_null($aliases)) {
-            return $this->config['channels'];
+            // get all aliases
+            $aliases = array_keys($this->config['channels']);
         }
 
         if (is_string($aliases)) {
             $aliases = [$aliases];
         }
 
-        return array_filter(array_map(function ($alias) {
-            if (! array_key_exists($alias, $this->config['channels'])) {
+        // create an array of valid channels.
+        // the array filter removes the null elements which are
+        // the invalid channels.
+        return array_filter(array_map(function ($alias) use ($data, $async) {
+            if (! isset($this->config['channels'][$alias])) {
                 return null;
             }
 
-            return $this->config['channels'][$alias];
+            $channelConfig = array_merge(['formatter' => $this->getDefaultFormatter()], $this->config['channels'][$alias]);
+
+            try {
+                return new Channel($channelConfig, $data, $async);
+            } catch (HermesException $e) {
+                $silent = isset($channelConfig['silent']) ? $channelConfig['silent'] : false;
+                if ($silent) {
+                    return null;
+                }
+
+                throw $e;
+            }
         }, $aliases));
     }
 
     /**
+     * Get the default formatter.
+     *
+     * @return mixed
+     */
+    private function getDefaultFormatter()
+    {
+        return isset($this->config['default_formatter']) ? $this->config['default_formatter'] : JsonFormatter::class;
+    }
+
+    /**
+     * Check that the config contains the required keys.
+     *
      * @param array $config
      * @return bool
      */
-    private static function isValid(array $config)
+    private static function hasRequiredKeys(array $config)
     {
         $difference = array_diff(self::$requiredKeys, array_keys($config));
 
