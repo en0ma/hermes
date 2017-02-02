@@ -1,13 +1,8 @@
 <?php
 use Lawstands\Hermes\Channel;
 use Lawstands\Hermes\Exception\HermesException;
-use Lawstands\Hermes\Formatter\JsonFormatter;
+use Lawstands\Hermes\Formatters\JsonFormatter;
 
-/**
- * Created by BrainMaestro.
- * Date: 01/02/2017
- * Time: 1:32 PM
- */
 class ChannelTest extends PHPUnit_Framework_TestCase
 {
     private $channel;

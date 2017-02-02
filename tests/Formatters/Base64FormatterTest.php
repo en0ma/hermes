@@ -1,12 +1,6 @@
 <?php
-use Lawstands\Hermes\Formatter\Base64Formatter;
+use Lawstands\Hermes\Formatters\Base64Formatter;
 
-/**
- * Created by Ezinwa Okpoechi.
- * iROKO Partners Ltd
- * Date: 01/02/2017
- * Time: 5:19 PM
- */
 class Base64FormatterTest extends PHPUnit_Framework_TestCase
 {
     /**

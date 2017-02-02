@@ -1,12 +1,6 @@
 <?php
-use Lawstands\Hermes\Formatter\JsonFormatter;
+use Lawstands\Hermes\Formatters\JsonFormatter;
 
-/**
- * Created by Ezinwa Okpoechi.
- * iROKO Partners Ltd
- * Date: 01/02/2017
- * Time: 5:06 PM
- */
 class JsonFormatterTest extends PHPUnit_Framework_TestCase
 {
     /**

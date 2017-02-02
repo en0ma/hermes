@@ -1,5 +1,5 @@
 <?php
-namespace Lawstands\Hermes\Formatter;
+namespace Lawstands\Hermes\Formatters;
 
 use Lawstands\Hermes\Formatter;
 
