@@ -1,4 +1,5 @@
-<?php namespace Lawstands\Hermes;
+<?php
+namespace Lawstands\Hermes;
 
 class Hermes
 {
@@ -23,47 +24,39 @@ class Hermes
      * Relay message synchronously.
      *
      * @param $data
-     * @param null $alias
+     * @param null $aliases
      */
-    public function relay($data, $alias = null)
+    public function relay($data, $aliases = null)
     {
-        $this->process($data, $alias, false);
+        $this->process($data, $aliases, false);
     }
 
     /**
      * Relay message asynchronously.
      *
      * @param $data
-     * @param null $alias
+     * @param null $aliases
      * @return array
      */
-    public function relaySync($data, $alias = null)
+    public function relaySync($data, $aliases = null)
     {
-        return $this->process($data, $alias, true);
+        return $this->process($data, $aliases, true);
     }
 
     /**
      * @param $data
-     * @param $alias
+     * @param $aliases
      * @param $async
      * @return array
      */
-    private function process($data, $alias, $async)
+    private function process($data, $aliases, $async)
     {
-        $channels = $this->channels($alias);
+        $channels = $this->config->getChannels($aliases, $data, $async);
         $responses = [];
 
         foreach($channels as $channel) {
-            $formatter = $channel->formatter;
-            $command = $channel->command;
-            $responses[$channel->alias] = $command->execute($formatter->transform($data), $async);
+            $responses[$channel->alias] = $channel->execute();
         }
         return $responses;
-    }
-
-    private function channels($alias)
-    {
-        $channel = new Channel();
-        return $channel->Channels($this->config->getWith($alias));
     }
 }
