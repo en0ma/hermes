@@ -5,9 +5,9 @@
  * Time: 5:04 PM
  */
 
-namespace Lawstands\Hermes\Formatter;
+namespace Hermes\Hermes\Formatter;
 
-use Lawstands\Hermes\Formatter;
+use Hermes\Hermes\Formatter;
 
 class Base64Formatter implements Formatter
 {

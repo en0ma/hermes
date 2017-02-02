@@ -1,5 +1,5 @@
 {
-    "name": "lawstands/hermes",
+    "name": "hermes/hermes",
     "description": "A tool to send events and messages asynchronously",
     "type": "library",
     "license": "MIT",
@@ -17,12 +17,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "Lawstands\\Hermes\\": "src/"
+            "Hermes\\Hermes\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Lawstands\\Hermes\\Test\\": "tests/"
+            "Hermes\\Hermes\\Test\\": "tests/"
         }
     },
     "require-dev": {

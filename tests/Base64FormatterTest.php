@@ -1,5 +1,6 @@
 <?php
-use Lawstands\Hermes\Formatter\Base64Formatter;
+
+use Hermes\Hermes\Formatter\Base64Formatter;
 
 /**
  * Created by Ezinwa Okpoechi.

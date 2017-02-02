@@ -5,7 +5,7 @@
  * Time: 7:37 PM
  */
 
-namespace Lawstands\Hermes;
+namespace Hermes\Hermes;
 
 class Config
 {

@@ -1,5 +1,6 @@
 <?php
-use Lawstands\Hermes\Formatter\JsonFormatter;
+
+use Hermes\Hermes\Formatter\JsonFormatter;
 
 /**
  * Created by Ezinwa Okpoechi.

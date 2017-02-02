@@ -1,5 +1,6 @@
 <?php
-use Lawstands\Hermes\Config;
+
+use Hermes\Hermes\Config;
 
 /**
  * Created by BrainMaestro

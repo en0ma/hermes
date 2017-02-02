@@ -5,9 +5,9 @@
  * Time: 4:43 PM
  */
 
-namespace Lawstands\Hermes\Formatter;
+namespace Hermes\Hermes\Formatter;
 
-use Lawstands\Hermes\Formatter;
+use Hermes\Hermes\Formatter;
 
 class JsonFormatter implements Formatter
 {

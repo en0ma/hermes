@@ -5,7 +5,7 @@
  * Time: 4:40 PM
  */
 
-namespace Lawstands\Hermes;
+namespace Hermes\Hermes;
 
 interface Formatter
 {
