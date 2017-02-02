@@ -52,11 +52,8 @@ class Hermes
     private function process($data, $aliases, $async)
     {
         $channels = $this->config->getChannels($aliases, $data, $async);
-        $responses = [];
-
         foreach($channels as $channel) {
-            $responses[$channel->alias] = $channel->execute();
+            $channel->execute();
         }
-        return $responses;
     }
 }
