@@ -1,51 +1,62 @@
 <?php
-
 namespace Lawstands\Hermes;
 
-/**
- * Created by BrainMaestro
- * Date: 28/1/2017
- * Time: 2:20 PM
- */
 class Channel
 {
     /**
-     * @var array
+     * Channel command.
+     *
+     * @var $alias $command
      */
-    private $receivers = [];
+    private $command;
+
 
     /**
      * Channel constructor.
-     * 
-     * @param array $receivers
+     * @param array $config
+     * @param $data
+     * @param bool $async
      */
-    public function __construct(array $receivers)
+    public function __construct(array $config, $data, $async = true)
     {
-        foreach ($receivers as $receiver) {
-            if ($this->isValid($receiver)) {
-                $this->receivers[] = $receiver;
-            }
-        }
+        $data = self::formatData($data, $config['formatter']);
+        $this->buildCommand($config, $data, $async);
     }
 
     /**
-     * Get all receivers.
+     * Execute channel command.
      *
-     * @return array
+     * @return string
      */
-    public function getReceivers()
+    public function execute()
     {
-        return $this->receivers;
+        return shell_exec($this->command);
     }
 
     /**
-     * Validate receivers.
+     * Build channel command.
      *
-     * @param $receiver
-     * @return bool
+     * @param $config
+     * @param $data
+     * @param $async
+     * @return string
      */
-    private function isValid($receiver)
+    private function buildCommand($config, $data, $async)
     {
-        return file_exists($receiver);
+        $redirect = $async ? '&>/dev/null' : '';
+        $this->command = "{$config['type']} {$config['path']} {$data} {$redirect}";
+    }
+
+    /**
+     * Format channel data.
+     *
+     * @param $data
+     * @param $formatter
+     * @return mixed
+     */
+    private static function formatData($data, $formatter)
+    {
+        $formatter = new $formatter;
+        return $formatter->format($data);
     }
 }

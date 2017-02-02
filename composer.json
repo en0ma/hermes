@@ -3,7 +3,8 @@
     "description": "A tool to send events and messages asynchronously",
     "type": "library",
     "license": "MIT",
-    "require": {},
+    "require": {
+    },
     "authors": [
         {
             "name": "Enehizena Lawrence",
@@ -16,8 +17,15 @@
     ],
     "autoload": {
         "psr-4": {
-            "Lawstands\\Hermes\\": "src/",
-            "Lawstands\\Hermes\\Tests\\": "Tests/"
+            "Lawstands\\Hermes\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Lawstands\\Hermes\\Test\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7"
     }
 }
