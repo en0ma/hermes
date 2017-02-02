@@ -1,5 +1,7 @@
 <?php
 use Lawstands\Hermes\Channel;
+use Lawstands\Hermes\Exception\HermesException;
+use Lawstands\Hermes\Formatter\JsonFormatter;
 
 /**
  * Created by BrainMaestro.
@@ -8,52 +10,31 @@ use Lawstands\Hermes\Channel;
  */
 class ChannelTest extends PHPUnit_Framework_TestCase
 {
-    private $channels = [];
+    private $channel;
+    private $channelConfig;
 
     public function setUp()
     {
-        $this->channels = $this->getChannels();
-
-        foreach ($this->channels as $channel) {
-            fclose(fopen($channel['path'], 'w'));
-        }
+        $data = 'testing';
+        $this->channelConfig = ['path' => 'test.php', 'type' => 'php', 'formatter' => JsonFormatter::class];
+        fclose(fopen($this->channelConfig['path'], 'w'));
+        $this->channel = new Channel($this->channelConfig, $data);
     }
 
     /**
      * @test
      */
-    public function it_returns_all_valid_channels()
+    public function it_fails_if_the_path_does_not_exist()
     {
-        $validChannels = Channel::get(array_merge($this->channels, [['path' => 'file_that_does_not_exist']]));
-        // no file was created for 'file_that_does_not_exist', so it should
-        // fail the validation check and not be included in the channels array.
-        $this->assertEquals($this->channels, $validChannels);
-    }
-
-    /**
-     * @test
-     */
-    public function it_correctly_sets_missing_type_on_a_channel()
-    {
-        $type = $this->channels[0]['type'];
-        unset($this->channels[0]['type']);
-        $channels = Channel::get([$this->channels[0]]);
-
-        $this->assertEquals($type, $channels[0]['type']);
-    }
-
-    private function getChannels()
-    {
-        return [
-            ['path' => 'test.php', 'type' => 'php'],
-            ['path' => 'test.py', 'type' => 'python'],
-        ];
+        $this->channelConfig['path'] = 'file_that_does_not_exist';
+        $this->expectException(HermesException::class);
+        new Channel($this->channelConfig, 'testing');
     }
 
     public function tearDown()
     {
-        foreach ($this->channels as $channel) {
-            unlink($channel['path']);
-        }
+        try {
+            unlink($this->channelConfig['path']);
+        } catch (Exception $e) {}
     }
 }
