@@ -7,6 +7,8 @@
 
 namespace Lawstands\Hermes;
 
+use Lawstands\Hermes\Exception\HermesException;
+
 class Config
 {
     /**
@@ -15,12 +17,24 @@ class Config
     private $config;
 
     /**
+     * @var array
+     */
+    private static $requiredKeys = [
+        'channels',
+    ];
+
+    /**
      * Config constructor.
      *
      * @param array $config
+     * @throws HermesException
      */
     public function __construct(array $config)
     {
+        if (! self::isValid($config)) {
+            throw new HermesException('Hermes config is missing one of the required config keys');
+        }
+
         $this->config = $config;
     }
 
@@ -32,6 +46,7 @@ class Config
      */
     public function getChannels($aliases)
     {
+        // get all aliases
         if (is_null($aliases)) {
             return $this->config['channels'];
         }
@@ -49,5 +64,14 @@ class Config
         }, $aliases));
     }
 
-//    private function validate
+    /**
+     * @param array $config
+     * @return bool
+     */
+    private static function isValid(array $config)
+    {
+        $difference = array_diff(self::$requiredKeys, array_keys($config));
+
+        return count($difference) == 0;
+    }
 }
