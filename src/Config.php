@@ -25,17 +25,29 @@ class Config
     }
 
     /**
-     * Get a channel by its alias
+     * Get channel by their aliases
      * 
-     * @param string $alias
-     * @return null|array
+     * @param string|array|null $aliases
+     * @return array
      */
-    public function getChannel($alias)
+    public function getChannels($aliases)
     {
-        if (! array_key_exists($alias, $this->config['channels'])) {
-            return null;
+        if (is_null($aliases)) {
+            return $this->config['channels'];
         }
-        
-        return $this->config['channels'][$alias];
+
+        if (is_string($aliases)) {
+            $aliases = [$aliases];
+        }
+
+        return array_filter(array_map(function ($alias) {
+            if (! array_key_exists($alias, $this->config['channels'])) {
+                return null;
+            }
+
+            return $this->config['channels'][$alias];
+        }, $aliases));
     }
+
+//    private function validate
 }
