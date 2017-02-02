@@ -2,14 +2,9 @@
 use Lawstands\Hermes\Channel;
 use Lawstands\Hermes\Config;
 use Lawstands\Hermes\Exception\HermesException;
-use Lawstands\Hermes\Formatter\Base64Formatter;
-use Lawstands\Hermes\Formatter\JsonFormatter;
+use Lawstands\Hermes\Formatters\Base64Formatter;
+use Lawstands\Hermes\Formatters\JsonFormatter;
 
-/**
- * Created by BrainMaestro
- * Date: 1/2/2017
- * Time: 7:42 PM
- */
 class ConfigTest extends PHPUnit_Framework_TestCase
 {
     private static $config;
