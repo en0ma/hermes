@@ -1,5 +1,6 @@
 <?php
 use Lawstands\Hermes\Config;
+use Lawstands\Hermes\Exception\HermesException;
 
 /**
  * Created by BrainMaestro
@@ -49,5 +50,14 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     {
         $alias = 'channel_does_not_exist';
         $this->assertEmpty(self::$config->getChannels($alias));
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_throw_an_exception_if_a_required_key_is_not_present()
+    {
+        $this->expectException(HermesException::class);
+        new Config([]); // empty array
     }
 }
