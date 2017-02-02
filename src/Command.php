@@ -3,12 +3,9 @@
 class Command
 {
     /**
-     * The channel that will be used to create
-     * the command to be executed.
+     * The channel used to create the command to be executed.
      *
-     * @var array $channel
-     * channel['type'] => channel type
-     * channel['path'] => channel file location
+     * @var Channel $channel
      */
     private $channel;
 
@@ -23,41 +20,26 @@ class Command
     private $async;
 
     /**
-     * Cordinate the
+     * Command constructor.
+     * @param Channel $channel
+     */
+    public function __construct(Channel $channel)
+    {
+        $this->channel = $channel;
+    }
+
+    /**
+     * Coordinate the the execution of the command.
      *
-     * @param array $channel
      * @param string $data
      * @param bool $async
      * @return string
      */
-    public function execute($channel, $data, $async = true)
+    public function execute($data, $async = true)
     {
-        $this->channel = $channel;
         $this->async = $async;
-
         $command = $this->make($data);
         return $this->run($command);
-    }
-
-    /**
-     * Retrieve the channel type.
-     *
-     * @return mixed
-     */
-    private function channelType()
-    {
-        return $this->channel['type'];
-    }
-
-    /**
-     * Retrieve the channel file
-     * location.
-     *
-     * @return mixed
-     */
-    private function channelPath()
-    {
-        return $this->channel['path'];
     }
 
     /**
@@ -65,7 +47,7 @@ class Command
      *
      * @return null|string
      */
-    private function redirect()
+    private function redirection()
     {
         return ($this->async) ? '&>/dev/null' : null;
     }
@@ -80,7 +62,7 @@ class Command
      */
     private function make($data)
     {
-        return "{$this->channelType()} {$this->channelPath()} {$data} {$this->redirect()}";
+        return "{$this->channel->type} {$this->channel->path} {$data} {$this->redirection()}";
     }
 
     /**
@@ -92,7 +74,7 @@ class Command
      */
     private function run($command)
     {
-        return exec($command, $output);
+        return exec($command, $commandOutput);
     }
 }
 
