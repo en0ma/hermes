@@ -6,7 +6,7 @@ class Channel
     /**
      * Channel command.
      *
-     * @var $alias $command
+     * @var $command
      */
     private $command;
 

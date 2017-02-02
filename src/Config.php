@@ -25,6 +25,15 @@ class Config
     ];
 
     /**
+     * format: extension => program
+     * @var array
+     */
+    private static $channelTypes = [
+        'rb' => 'ruby',
+        'py' => 'python',
+    ];
+
+    /**
      * Config constructor.
      *
      * @param array $config
@@ -34,6 +43,10 @@ class Config
     {
         if (! self::hasRequiredKeys($config)) {
             throw new HermesException('Hermes config is missing one of the required config keys');
+        }
+
+        foreach ($config['channels'] as $channel) {
+            $this->normalizeChannelConfig($channel);
         }
 
         $this->config = $config;
@@ -66,18 +79,7 @@ class Config
                 return null;
             }
 
-            $channelConfig = array_merge(['formatter' => $this->getDefaultFormatter()], $this->config['channels'][$alias]);
-
-            try {
-                return new Channel($channelConfig, $data, $async);
-            } catch (HermesException $e) {
-                $silent = isset($channelConfig['silent']) ? $channelConfig['silent'] : false;
-                if ($silent) {
-                    return null;
-                }
-
-                throw $e;
-            }
+            return new Channel($this->config['channels'][$alias], $data, $async);
         }, $aliases));
     }
 
@@ -92,6 +94,20 @@ class Config
     }
 
     /**
+     * Get a channel's type.
+     *
+     * @param $path
+     * @return string
+     */
+    private static function getType($path)
+    {
+        $extension = pathinfo($path, PATHINFO_EXTENSION);
+        // choose type if it was found in the types map
+        // or use extension as the type.
+        return isset(self::$channelTypes[$extension]) ? self::$channelTypes[$extension] : $extension;
+    }
+
+    /**
      * Check that the config contains the required keys.
      *
      * @param array $config
@@ -102,5 +118,30 @@ class Config
         $difference = array_diff(self::$requiredKeys, array_keys($config));
 
         return count($difference) == 0;
+    }
+
+    /**
+     * Normalize the channel config.
+     *
+     * @param array $channelConfig
+     * @throws HermesException
+     */
+    private function normalizeChannelConfig(array &$channelConfig)
+    {
+        if (! isset($channelConfig['path']) || ! file_exists($channelConfig['path'])) {
+            throw new HermesException('Path either was not specified or the file does not exist');
+        }
+
+        if (! isset($channelConfig['formatter'])) {
+            $channelConfig['formatter'] = $this->getDefaultFormatter();
+        }
+
+        if (! class_exists($channelConfig['formatter'])) {
+            throw new HermesException('Formatter does not exist');
+        }
+
+        if (! isset($channelConfig['type'])) {
+            $channelConfig['type'] = $this->getType();
+        }
     }
 }
