@@ -21,33 +21,31 @@ class Hermes
     }
 
     /**
-     * Relay message synchronously.
-     *
-     * @param $data
-     * @param null $aliases
-     */
-    public function relay($data, $aliases = null)
-    {
-        $this->process($data, $aliases, false);
-    }
-
-    /**
      * Relay message asynchronously.
      *
      * @param $data
-     * @param null $aliases
-     * @return array
+     * @param null|string|array $aliases
+     */
+    public function relay($data, $aliases = null)
+    {
+        $this->process($data, $aliases, true);
+    }
+
+    /**
+     * Relay message synchronously.
+     *
+     * @param $data
+     * @param null|string|array $aliases
      */
     public function relaySync($data, $aliases = null)
     {
-        return $this->process($data, $aliases, true);
+        $this->process($data, $aliases, false);
     }
 
     /**
      * @param $data
      * @param $aliases
      * @param $async
-     * @return array
      */
     private function process($data, $aliases, $async)
     {
