@@ -8,7 +8,7 @@
 namespace Lawstands\Hermes;
 
 use Lawstands\Hermes\Exception\HermesException;
-use Lawstands\Hermes\Formatter\JsonFormatter;
+use Lawstands\Hermes\Formatters\JsonFormatter;
 
 class Config
 {
@@ -71,16 +71,15 @@ class Config
             $aliases = [$aliases];
         }
 
-        // create an array of valid channels.
-        // the array filter removes the null elements which are
-        // the invalid channels.
-        return array_filter(array_map(function ($alias) use ($data, $async) {
-            if (! isset($this->config['channels'][$alias])) {
-                return null;
+        $channels = [];
+        foreach ($aliases as $alias) {
+            // add channel only if its alias exists in the config
+            if (isset($this->config['channels'][$alias])) {
+                $channels[] = new Channel($this->config['channels'][$alias], $data, $async);
             }
+        }
 
-            return new Channel($this->config['channels'][$alias], $data, $async);
-        }, $aliases));
+        return $channels;
     }
 
     /**
