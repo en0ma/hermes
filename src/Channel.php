@@ -20,7 +20,7 @@ class Channel
     public function __construct(array $config, $data, $async = true)
     {
         $data = self::formatData($data, $config['formatter']);
-        $this->buildCommand($config, $data, $async);
+        $this->buildCommand($config['type'], $config['path'], $data, $async);
     }
 
     /**
@@ -36,15 +36,16 @@ class Channel
     /**
      * Build channel command.
      *
-     * @param $config
+     * @param $type
+     * @param $path
      * @param $data
      * @param $async
      * @return string
      */
-    private function buildCommand($config, $data, $async)
+    private function buildCommand($type, $path, $data, $async)
     {
         $redirect = $async ? '&>/dev/null' : '';
-        $this->command = "{$config['type']} {$config['path']} {$data} {$redirect}";
+        $this->command = "{$type} {$path} {$data} {$redirect}";
     }
 
     /**
