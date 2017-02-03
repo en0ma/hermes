@@ -28,7 +28,7 @@ class Channel
      */
     public function execute()
     {
-        shell_exec($this->command);
+        return shell_exec($this->command);
     }
 
     /**
