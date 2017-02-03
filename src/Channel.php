@@ -25,12 +25,10 @@ class Channel
 
     /**
      * Execute channel command.
-     *
-     * @return string
      */
     public function execute()
     {
-        return shell_exec($this->command);
+        shell_exec($this->command);
     }
 
     /**
@@ -44,7 +42,7 @@ class Channel
      */
     private function buildCommand($type, $path, $data, $async)
     {
-        $redirect = $async ? '&>/dev/null' : '';
+        $redirect = $async ? '>/dev/null 2>&1 &' : '';
         $this->command = "{$type} {$path} {$data} {$redirect}";
     }
 
