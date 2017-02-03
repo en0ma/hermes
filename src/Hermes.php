@@ -24,11 +24,12 @@ class Hermes
      * Relay message asynchronously.
      *
      * @param $data
-     * @param null|string|array $aliases
+     * @param null $aliases
+     * @return array
      */
     public function relay($data, $aliases = null)
     {
-        $this->process($data, $aliases, true);
+        return $this->process($data, $aliases, true);
     }
 
     /**
@@ -36,6 +37,7 @@ class Hermes
      *
      * @param $data
      * @param null|string|array $aliases
+     * @return array
      */
     public function relaySync($data, $aliases = null)
     {
@@ -46,12 +48,16 @@ class Hermes
      * @param $data
      * @param $aliases
      * @param $async
+     * @return array $responses
      */
     private function process($data, $aliases, $async)
     {
         $channels = $this->config->getChannels($aliases, $data, $async);
+
+        $responses = [];
         foreach($channels as $channel) {
-            $channel->execute();
+            $responses[] = $channel->execute();
         }
+        return $responses;
     }
 }
