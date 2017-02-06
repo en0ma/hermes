@@ -54,10 +54,8 @@ class Hermes
     {
         $channels = $this->config->getChannels($aliases, $data, $async);
 
-        $responses = [];
-        foreach($channels as $channel) {
-            $responses[] = $channel->execute();
-        }
-        return $responses;
+        return array_map(function(Channel $channel) {
+            return $channel->execute();
+        }, $channels);
     }
 }
