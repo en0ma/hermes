@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by BrainMaestro
- * Date: 1/2/2017
- * Time: 7:37 PM
- */
-
 namespace Lawstands\Hermes;
 
 use Lawstands\Hermes\Exception\HermesException;
@@ -15,20 +9,27 @@ class Config
     /**
      * @var array
      */
-    private $config;
+    private $options;
 
     /**
      * @var array
      */
-    private static $requiredKeys = [
+    private static $requiredOptions = [
         'channels',
+    ];
+
+    /**
+     * @var array
+     */
+    private static $requiredChannelProperties = [
+        'path',
     ];
 
     /**
      * format: extension => program
      * @var array
      */
-    private static $channelTypes = [
+    private static $supportedTypes = [
         'rb' => 'ruby',
         'py' => 'python',
     ];
@@ -36,24 +37,30 @@ class Config
     /**
      * Config constructor.
      *
-     * @param array $config
+     * @param array $options
      * @throws HermesException
      */
-    public function __construct(array $config)
+    public function __construct(array $options)
     {
-        if (! self::hasRequiredKeys($config)) {
+        if (! self::hasRequiredKeys(self::$requiredOptions, $options)) {
             throw new HermesException('Hermes config is missing one of the required config keys');
         }
 
-        foreach ($config['channels'] as $channel) {
-            $this->normalizeChannelConfig($channel);
-        }
+        foreach ($options['channels'] as $channel => $props) {
+            if (! self::hasRequiredKeys(self::$requiredChannelProperties, $props)) {
+                throw new HermesException("Channel: {$channel}, is missing a required prop.");
+            }
 
-        $this->config = $config;
+            $this->normalizeType($props);
+            $this->normalizeFormatter($props);
+            $this->probe($props);
+        }
+        $this->options = $options;
     }
 
     /**
-     * Get channels by their aliases.
+     * Returns an array of channel objects created from the properties of the supplied aliases
+     * that exist in the global options['channel'] array.
      *
      * @param string|array|null $aliases
      * @param $data
@@ -63,84 +70,77 @@ class Config
     public function getChannels($aliases = null, $data, $async = true)
     {
         if (is_null($aliases)) {
-            // get all aliases
-            $aliases = array_keys($this->config['channels']);
+            $aliases = array_keys($this->options['channels']);
         }
 
         if (is_string($aliases)) {
-            $aliases = [$aliases];
+            $aliases = (array) $aliases;
         }
+        $aliasProps = array_intersect_key($this->options['channels'], array_flip($aliases));
 
-        $channels = [];
-        foreach ($aliases as $alias) {
-            // add channel only if its alias exists in the config
-            if (isset($this->config['channels'][$alias])) {
-                $channels[] = new Channel($this->config['channels'][$alias], $data, $async);
-            }
-        }
-
-        return $channels;
+        return array_map(function($props) use ($data, $async) {
+            return new Channel($props, $data, $async);
+        }, $aliasProps);
     }
 
     /**
-     * Get the default formatter.
+     * Determines if the supplied keys matches with what
+     * id required keys of $requiredOptions or $requiredChannelProperties
      *
-     * @return mixed
-     */
-    private function getDefaultFormatter()
-    {
-        return isset($this->config['default_formatter']) ? $this->config['default_formatter'] : JsonFormatter::class;
-    }
-
-    /**
-     * Get a channel's type.
-     *
-     * @param $path
-     * @return string
-     */
-    private static function getType($path)
-    {
-        $extension = pathinfo($path, PATHINFO_EXTENSION);
-        // choose type if it was found in the types map
-        // or use extension as the type.
-        return isset(self::$channelTypes[$extension]) ? self::$channelTypes[$extension] : $extension;
-    }
-
-    /**
-     * Check that the config contains the required keys.
-     *
-     * @param array $config
+     * @param array $requiredKeys
+     * @param array $suppliedKeys
      * @return bool
      */
-    private static function hasRequiredKeys(array $config)
+    private static function hasRequiredKeys($requiredKeys, array $suppliedKeys)
     {
-        $difference = array_diff(self::$requiredKeys, array_keys($config));
-
+        $difference = array_diff($requiredKeys, array_keys($suppliedKeys));
         return count($difference) == 0;
     }
 
     /**
-     * Normalize the channel config.
+     * When normalization is complete, check to
+     * make sure channel can be executed from hermes.
      *
-     * @param array $channelConfig
+     * @param array $props
      * @throws HermesException
      */
-    private function normalizeChannelConfig(array &$channelConfig)
+    private function probe($props)
     {
-        if (! isset($channelConfig['path']) || ! file_exists($channelConfig['path'])) {
-            throw new HermesException('Path either was not specified or the file does not exist');
+        if (! file_exists($props['path'])) {
+            throw new HermesException("File: {$props['path']}, not found.");
         }
 
-        if (! isset($channelConfig['formatter'])) {
-            $channelConfig['formatter'] = $this->getDefaultFormatter();
+        if (! class_exists($props['formatter'])) {
+            throw new HermesException("Formatter: {$props['formatter']} class, not found.");
         }
+    }
 
-        if (! class_exists($channelConfig['formatter'])) {
-            throw new HermesException('Formatter does not exist');
-        }
+    /**
+     * Determines the channel formatter to be used.
+     * if the global formatter option is set we used that,
+     * else we use the default JsonFormatter of hermes.
+     *
+     * @param $props
+     * @return mixed
+     */
+    private function normalizeFormatter(&$props)
+    {
+        $props['formatter'] = isset($this->options['formatter']) ? $this->options['formatter'] : JsonFormatter::class;
+    }
 
-        if (! isset($channelConfig['type'])) {
-            $channelConfig['type'] = $this->getType();
+    /**
+     * Determines the channel type. If channel type
+     * is not specified in the channel properties, use the channel
+     * file extension to determine the type from the list of supportedTypes.
+     *
+     * @param $props
+     * @return string
+     */
+    private static function normalizeType(&$props)
+    {
+        if (! isset($props['type'])) {
+            $extension = pathinfo($props['path'], PATHINFO_EXTENSION);
+            $props['type'] = isset(self::$supportedTypes[$extension]) ? self::$supportedTypes[$extension] : $extension;
         }
     }
 }
