@@ -19,7 +19,7 @@ class Channel
      */
     public function __construct(array $config, $data, $async = true)
     {
-        $data = self::formatData($data, $config['formatter']);
+        $data = self::formatData($data, new $config['formatter']);
         $this->buildCommand($config['type'], $config['path'], $data, $async);
     }
 
@@ -53,9 +53,8 @@ class Channel
      * @param $formatter
      * @return mixed
      */
-    private static function formatData($data, $formatter)
+    private static function formatData($data, Formatter $formatter)
     {
-        $formatter = new $formatter;
         return $formatter->format($data);
     }
 }
