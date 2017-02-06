@@ -24,7 +24,7 @@ class Hermes
      * Relay message asynchronously.
      *
      * @param $data
-     * @param null $aliases
+     * @param null|string|array $aliases
      * @return array
      */
     public function relay($data, $aliases = null)
@@ -45,9 +45,12 @@ class Hermes
     }
 
     /**
+     * Get channels from config, using channels
+     * execute command and return result only for relaySync.
+     *
      * @param $data
-     * @param $aliases
-     * @param $async
+     * @param null|string|array $aliases
+     * @param boolean $async
      * @return array $responses
      */
     private function process($data, $aliases, $async = true)
