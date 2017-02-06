@@ -30,6 +30,7 @@ class Hermes
     public function relay($data, $aliases = null)
     {
         return $this->process($data, $aliases, true);
+        $this->process($data, $aliases);
     }
 
     /**
@@ -50,7 +51,7 @@ class Hermes
      * @param $async
      * @return array $responses
      */
-    private function process($data, $aliases, $async)
+    private function process($data, $aliases, $async = true)
     {
         $channels = $this->config->getChannels($aliases, $data, $async);
 
