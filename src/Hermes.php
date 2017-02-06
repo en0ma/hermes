@@ -29,7 +29,6 @@ class Hermes
      */
     public function relay($data, $aliases = null)
     {
-        return $this->process($data, $aliases, true);
         $this->process($data, $aliases);
     }
 
@@ -42,7 +41,7 @@ class Hermes
      */
     public function relaySync($data, $aliases = null)
     {
-        $this->process($data, $aliases, false);
+        return $this->process($data, $aliases, false);
     }
 
     /**
